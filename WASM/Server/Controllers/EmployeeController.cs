@@ -34,30 +34,38 @@ namespace WASM.Server.Controllers
         [HttpGet("Country")]
         public async Task<ActionResult<List<Country>>> Country()
         {
+            _logger.LogInformation("start getting all Countries...");
             var Country = await _context.Countries.ToListAsync();
+            _logger.LogInformation("Countries data has fetched...");
             return Ok(Country);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Country>> GetEmployeeById(int id)
         {
+            _logger.LogInformation("start getting  employee By Employee ID...");
             var emp = await _context.Employees
                 .Include(h => h.Country)
                 .FirstOrDefaultAsync(h => h.EmployeeId == id);
             if (emp == null)
             {
+                _logger.LogInformation("Not Found any employee data...");
                 return NotFound("Sorry, no Employee here. :/");
             }
+            _logger.LogInformation("employee data has fetched by employee id....");
+
             return Ok(emp);
         }
 
         [HttpPost]
         public async Task<ActionResult<List<Employee>>> CreateEmployee(Employee employee)
         {
+            _logger.LogInformation("createing employee data to stored in database....");
+
             employee.Country = null;
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
-
+            _logger.LogInformation("createing employee data Done....");
             return Ok(await GetDbEmployees());
         }
 
@@ -66,49 +74,44 @@ namespace WASM.Server.Controllers
 
         public async Task<ActionResult<List<Employee>>> UpdateEmployee(Employee employee, int id)
         {
+            _logger.LogInformation("start getting  employee By Employee ID to edited.....");
             var EmpD = await _context.Employees
                 .Include(sh => sh.Country)
                 .FirstOrDefaultAsync(sh => sh.EmployeeId == id);
+            _logger.LogInformation("employee data has fetched by employee id....");
             if (EmpD == null)
+            { 
+                _logger.LogInformation("Not Found any employee data...");
                 return NotFound("Sorry, but no Employee . :/");
+            }
 
-            //EmpD.FirstName = employee.FirstName;
-            //EmpD.LastName = employee.LastName;
-            //EmpD.Country = employee.Country;
-            //EmpD.PhoneNumber = employee.PhoneNumber;
-            //EmpD.Comment = employee.Comment;
-            //EmpD.BirthDate = employee.BirthDate;
-            //EmpD.JoinedDate = employee.JoinedDate;
-            //EmpD.Email = employee.Email;
-            //EmpD.ExitDate = employee.ExitDate;
-
-            //_context.Employees.Add(EmpD);
-            //_context.Entry(EmpD).State = EntityState.Modified;
             _context.Entry(EmpD).CurrentValues.SetValues(employee);
-
-
             await _context.SaveChangesAsync();
-
+            _logger.LogInformation("employee data has edited succeded....");
             return Ok(await GetDbEmployees());
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<List<Employee>>> DeleteEmployee(int id)
         {
+            _logger.LogInformation("start getting  employee By Employee ID to deleted.....");
             var dbEmployee = await _context.Employees
                 .Include(sh => sh.Country)
                 .FirstOrDefaultAsync(sh => sh.EmployeeId == id);
+            _logger.LogInformation("employee data has fetched by employee id....");
             if (dbEmployee == null)
-                return NotFound("Sorry, but no Employee for you. :/");
+                _logger.LogInformation("Not Found any employee data...");
+            return NotFound("Sorry, but no Employee for you. :/");
 
             _context.Employees.Remove(dbEmployee);
             await _context.SaveChangesAsync();
-
+            _logger.LogInformation("employee data has removed ....");
             return Ok(await GetDbEmployees());
         }
 
         private async Task<List<Employee>> GetDbEmployees()
         {
+            _logger.LogInformation("employee data has fetched with countries....");
             return await _context.Employees.Include(sh => sh.Country).ToListAsync();
         }
 
