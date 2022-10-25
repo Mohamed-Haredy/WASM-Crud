@@ -28,8 +28,7 @@ namespace EmployeeCrud.Server.Services
 
         private async Task SetEmployee(HttpResponseMessage result)
         {
-            //var response = await result.Content.ReadFromJsonAsync<List<Employee>>();
-            //employees = response;
+            
             _navigationManager.NavigateTo("employee");
         }
 

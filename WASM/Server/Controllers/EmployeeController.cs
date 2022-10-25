@@ -80,7 +80,7 @@ namespace WASM.Server.Controllers
                 .FirstOrDefaultAsync(sh => sh.EmployeeId == id);
             _logger.LogInformation("employee data has fetched by employee id....");
             if (EmpD == null)
-            { 
+            {
                 _logger.LogInformation("Not Found any employee data...");
                 return NotFound("Sorry, but no Employee . :/");
             }
@@ -95,14 +95,13 @@ namespace WASM.Server.Controllers
         public async Task<ActionResult<List<Employee>>> DeleteEmployee(int id)
         {
             _logger.LogInformation("start getting  employee By Employee ID to deleted.....");
-            var dbEmployee = await _context.Employees
-                .Include(sh => sh.Country)
-                .FirstOrDefaultAsync(sh => sh.EmployeeId == id);
+            var dbEmployee = await _context.Employees.FirstOrDefaultAsync(sh => sh.EmployeeId == id);
             _logger.LogInformation("employee data has fetched by employee id....");
             if (dbEmployee == null)
+            {
                 _logger.LogInformation("Not Found any employee data...");
-            return NotFound("Sorry, but no Employee for you. :/");
-
+                return NotFound("Sorry, but no Employee for you. :/");
+            }
             _context.Employees.Remove(dbEmployee);
             await _context.SaveChangesAsync();
             _logger.LogInformation("employee data has removed ....");
