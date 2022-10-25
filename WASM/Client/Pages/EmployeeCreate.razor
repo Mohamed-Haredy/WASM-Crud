@@ -1,0 +1,86 @@
+﻿@page "/EmployeeCreate"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+
+@inject IEmployeeServices EmployeeServices
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+@inject HttpClient Http
+
+
+
+ 
+    <PageTitle>Create a new Employee </PageTitle>
+    <h3>Create a new Employee </h3>
+ 
+    <ValidationSummary></ValidationSummary>
+<EditForm Model="employee" OnSubmit="HandleSubmit">
+    <div>
+        <label for="FirstName">First Name</label>
+        <InputText id="FirstName" @bind-Value="employee.FirstName" class="form-control"></InputText>
+        @*<ValidationMessage @For="E"></ValidationMessage>*@
+    </div>
+    <div>
+        <label for="LastName">Last Name</label>
+        <InputText id="LastName" @bind-Value="employee.LastName" class="form-control"></InputText>
+    </div>
+    <div>
+        <label for="PhoneNumber">Phone Number</label>
+        <InputText id="PhoneNumber" @bind-Value="employee.PhoneNumber" class="form-control"></InputText>
+    </div>
+    <div>
+        <label>Country</label><br />
+        <InputSelect @bind-Value="employee.CountryId" class="form-select">
+            @foreach (var country in EmployeeServices.countries)
+            {
+                <option value="@country.CountryId">@country.Name</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="form-group row">
+        <label for="joineddate" class="col-form-label">Joined on: </label>
+        <InputDate id="joineddate" class="form-control" @bind-Value="@employee.JoinedDate" placeholder="Enter date joined"></InputDate>
+    </div>
+
+    <div class="form-group row">
+        <label for="exitdate" class="col-form-label">Left on: </label>
+        <InputDate id="exitdate" class="form-control" @bind-Value="@employee.ExitDate" placeholder="Enter exit date"></InputDate>
+    </div>
+
+    <div class="form-group row">
+        <label for="comment" class="col-form-label">Comment: </label>
+        <InputTextArea id="comment" class="form-control" @bind-Value="@employee.Comment" placeholder="Enter comment"></InputTextArea>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">@btnText</button>
+    
+</EditForm>
+@code {
+
+
+
+    string btnText = string.Empty;
+
+    WASM.Shared.Employee employee = new WASM.Shared.Employee { Country = new Country() };
+
+    protected override async Task OnInitializedAsync()
+    {
+        btnText = "Save New Employee" ;
+        await EmployeeServices.GetCountry();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        employee.Country = EmployeeServices.countries[0];
+        employee.CountryId = employee.Country.CountryId;
+    }
+
+    async Task HandleSubmit()
+    {         
+       await EmployeeServices.CreateEmployee(employee);
+
+    }
+
+   
+}

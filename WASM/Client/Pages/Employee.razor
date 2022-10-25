@@ -1,0 +1,77 @@
+﻿ 
+@page "/employee"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+
+@inject IEmployeeServices EmployeeServices
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+@inject HttpClient Http
+ 
+
+<PageTitle>Employees</PageTitle>
+
+ 
+
+<table class="table">
+    <thead>
+        <tr>
+
+                <th> ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Phone Number</th>
+                <th>Birth Date</th>
+                <th>Email</th>
+                <th>Country</th>
+                <th>Joined Date</th>
+                <th>Exit Date</th>
+                <th>Comment</th>
+                <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var employee in EmployeeServices.employees)
+        {
+            <tr>
+                    <td>@employee.EmployeeId</td>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.PhoneNumber</td>
+                    <td>@employee.BirthDate</td>
+                    <td>@employee.Email</td>
+                    <td>@employee.Country.Name</td>
+                    <td>@employee.JoinedDate</td>
+                    <td>@employee.ExitDate</td>
+                    <td>@employee.Comment</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="(() => ShowEmployee(employee.EmployeeId))"><i class="oi oi-pencil"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button class="btn btn-primary" @onclick="CreateEmployee">Create New Hero</button>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await EmployeeServices.GetEmployees();
+    }
+
+    void ShowEmployee(int id)
+    {
+        NavigationManager.NavigateTo($"employeeedit/{id}");
+    }
+
+    void CreateEmployee()
+    {
+        NavigationManager.NavigateTo("/employeeCreate");
+    }
+
+
+    
+}
+
+ 
