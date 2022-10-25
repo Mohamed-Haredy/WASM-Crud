@@ -1,0 +1,61 @@
+﻿@page "/Countries"
+@inject IEmployeeServices EmployeeServices
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+@inject HttpClient Http
+
+
+<PageTitle>Employees</PageTitle>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th> ID</th>
+            <th>First Name</th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var Country in EmployeeServices.countries)
+        {
+            <tr>
+                <td>@Country.CountryId</td>
+                <td>@Country.Name</td>
+
+                <td>
+                    <button class="btn btn-primary" @onclick="(() => ShowCountry(Country.CountryId))"><i class="oi oi-pencil"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button class="btn btn-primary" @onclick="CreateCountry">Create Country</button>
+
+
+
+
+
+
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await EmployeeServices.GetCountry();
+    }
+
+    void ShowCountry(int id)
+    {
+        NavigationManager.NavigateTo($"CountryEdit/{id}");
+    }
+
+    void CreateCountry()
+    {
+        NavigationManager.NavigateTo("/countryCreate");
+    }
+
+}
+
+
